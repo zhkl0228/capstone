@@ -120,11 +120,13 @@ public class Capstone {
     // list of semantic groups this instruction belongs to.
     public byte[] groups;
     public OpInfo operands;
+    private final CsInsnDeallocator deallocator;
 
-    public CsInsn (_cs_insn insn, int _arch, NativeLong _csh, CS _cs, boolean diet) {
+    public CsInsn (_cs_insn insn, int _arch, NativeLong _csh, CS _cs, boolean diet, CsInsnDeallocator deallocator) {
       id = insn.id;
       address = insn.address;
       size = insn.size;
+      this.deallocator = deallocator;
 
       if (!diet) {
         int lm = 0;
@@ -283,11 +285,11 @@ public class Capstone {
     }
   }
 
-  private CsInsn[] fromArrayRaw(_cs_insn[] arr_raw) {
+  private CsInsn[] fromArrayRaw(_cs_insn[] arr_raw, CsInsnDeallocator deallocator) {
     CsInsn[] arr = new CsInsn[arr_raw.length];
 
     for (int i = 0; i < arr_raw.length; i++) {
-      arr[i] = new CsInsn(arr_raw[i], this.arch, ns.csh, cs, this.diet);
+      arr[i] = new CsInsn(arr_raw[i], this.arch, ns.csh, cs, this.diet, deallocator);
     }
 
     return arr;
@@ -508,6 +510,21 @@ public class Capstone {
     return disasm(code, address, 0);
   }
 
+  private static class CsInsnDeallocator {
+    private final Capstone.CS cs;
+    private final Pointer p;
+    private final NativeLong c;
+    CsInsnDeallocator(Capstone.CS cs, Pointer p, NativeLong c) {
+      this.cs = cs;
+      this.p = p;
+      this.c = c;
+    }
+    @Override
+    protected void finalize() throws Throwable {
+      cs.cs_free(p, c);
+    }
+  }
+
   /**
    * Disassemble up to @count instructions from @code assumed to be located at @address,
    * stop when encountering first broken instruction.
@@ -529,11 +546,11 @@ public class Capstone {
     Pointer p = insnRef.getValue();
     _cs_insn byref = new _cs_insn(p);
 
-    CsInsn[] allInsn = fromArrayRaw((_cs_insn[]) byref.toArray(c.intValue()));
+    CsInsnDeallocator deallocator = new CsInsnDeallocator(cs, p, c);
+    CsInsn[] allInsn = fromArrayRaw((_cs_insn[]) byref.toArray(c.intValue()), deallocator);
 
-    // free allocated memory
+    // use CsInsnDeallocator free allocated memory
     // cs.cs_free(p, c);
-    // FIXME(danghvu): Can't free because memory is still inside CsInsn
 
     return allInsn;
   }
