@@ -6,7 +6,7 @@
 
     <groupId>com.github.zhkl0228</groupId>
     <artifactId>capstone</artifactId>
-    <version>3.0.8</version>
+    <version>3.0.9</version>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
@@ -88,8 +88,8 @@
     </build>
     <dependencies>
         <dependency>
-            <groupId>net.java.dev.jna</groupId>
-            <artifactId>jna</artifactId>
+            <groupId>com.github.zhkl0228</groupId>
+            <artifactId>jna_silicon</artifactId>
             <version>4.5.2</version>
         </dependency>
     </dependencies>

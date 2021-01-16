@@ -3,15 +3,9 @@
 
 package capstone;
 
-import com.sun.jna.Library;
-import com.sun.jna.Memory;
-import com.sun.jna.Native;
-import com.sun.jna.NativeLong;
+import com.sun.jna.*;
 import com.sun.jna.ptr.ByteByReference;
 import com.sun.jna.ptr.NativeLongByReference;
-import com.sun.jna.Structure;
-import com.sun.jna.Union;
-import com.sun.jna.Pointer;
 import com.sun.jna.ptr.PointerByReference;
 import com.sun.jna.ptr.IntByReference;
 
@@ -20,6 +14,10 @@ import java.util.Arrays;
 import java.lang.RuntimeException;
 
 public class Capstone {
+
+  static {
+    NativeLoader.loadAppleSilicon();
+  }
 
   protected static abstract class OpInfo {};
   protected static abstract class UnionOpInfo extends Structure {};
