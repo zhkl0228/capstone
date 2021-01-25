@@ -3,10 +3,11 @@
 
 import capstone.Capstone;
 import capstone.Arm;
+import junit.framework.TestCase;
 
 import static capstone.Arm_const.*;
 
-public class TestArm {
+public class TestArm extends TestCase {
 
   static byte[] hexString2Byte(String s) {
     // from http://stackoverflow.com/questions/140131/convert-a-string-representation-of-a-hex-dump-to-a-byte-array-using-java
@@ -106,7 +107,11 @@ public class TestArm {
       System.out.printf("\tUser-mode: True\n");
   }
 
-  public static void main(String argv[]) {
+  public void test() {
+    main(null);
+  }
+
+  public static void main(String[] argv) {
 
     final TestBasic.platform[] all_tests = {
       new TestBasic.platform(Capstone.CS_ARCH_ARM, Capstone.CS_MODE_ARM, hexString2Byte(ARM_CODE), "ARM"),
