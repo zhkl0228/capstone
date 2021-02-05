@@ -9,6 +9,22 @@ import static capstone.Arm64_const.*;
 
 public class TestArm64 extends TestCase {
 
+  public void testOperands() {
+    // cmp w8,w9
+    Capstone capstone = new Capstone(Capstone.CS_ARCH_ARM64, Capstone.CS_MODE_ARM);
+    capstone.setDetail(Capstone.CS_OPT_ON);
+    byte[] code = new byte[]{0x1F, 0x01, 0x09, 0x6B};
+    Capstone.CsInsn csInsn = capstone.disasm(code,0x1000)[0];
+    assertEquals("cmp", csInsn.mnemonic);
+    Arm64.OpInfo operands = (Arm64.OpInfo) csInsn.operands;
+    // cmp w8,w9
+    Arm64.Operand lvar = operands.op[0];
+    Arm64.Operand rvar = operands.op[1];
+
+    assertEquals(ARM64_OP_REG, lvar.type);
+    assertEquals(ARM64_OP_REG, rvar.type);
+  }
+
   static byte[] hexString2Byte(String s) {
     // from http://stackoverflow.com/questions/140131/convert-a-string-representation-of-a-hex-dump-to-a-byte-array-using-java
     int len = s.length();
